@@ -112,22 +112,23 @@ io.on('connection', (socket) => {
 
         // C. Notify Both Players
         // Emit to the Waiting Player (Opponent)
-        io.to(opponent.socketId).emit('match_found', { 
+       io.to(opponent.socketId).emit('match_found', { 
             roomId, 
             opponent: userData.username, 
-            gameId: newGame._id 
+            gameId: newGame._id,
+            problem: newGame.problem // <--- ADD THIS LINE ✅
         });
 
         // Emit to the Current Player (You)
         socket.emit('match_found', { 
             roomId, 
             opponent: opponent.username, 
-            gameId: newGame._id 
+            gameId: newGame._id,
+            problem: newGame.problem // <--- ADD THIS LINE HERE TOO ✅
         });
 
         // Clear the queue
         waitingPlayer = null;
-
       } else {
         // No one is waiting. Put this player in the queue.
         waitingPlayer = {

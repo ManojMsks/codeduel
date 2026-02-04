@@ -1,46 +1,72 @@
+const mongoose = require('mongoose');
 const axios = require('axios');
+// Fix: Adjust path to look for .env in the current folder OR parent
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') }); 
+
 const Problem = require('../models/Problem');
 
-// fetches problems from CF and updates the database.
-const seedProblems = async () => {
-  try {
-    console.log('Fetching problems from Codeforces...');
-    const response = await axios.get('https://codeforces.com/api/problemset.problems');
-    if (response.data.status !== 'OK') {
-  throw new Error('Codeforces API failed');
+console.log("🚀 Seeder Script Starting...");
+
+// 1. DEBUG: Check if we found the database URL
+const dbUri = process.env.MONGODB_URI;
+if (!dbUri) {
+    console.error("❌ FATAL ERROR: Could not find MONGODB_URI.");
+    console.error("👉 Make sure your .env file is in the 'backend' folder.");
+    console.error("👉 Current directory:", process.cwd());
+    process.exit(1);
 }
 
+console.log("🔗 Connecting to MongoDB...");
+
+mongoose.connect(dbUri)
+  .then(() => {
+      console.log('✅ MongoDB Connected. Fetching problems from Codeforces...');
+      seedProblems();
+  })
+  .catch(err => {
+      console.error('❌ MongoDB Connection Error:', err);
+      process.exit(1);
+  });
+
+const seedProblems = async () => {
+  try {
+    // 2. Fetch Data
+    const response = await axios.get('https://codeforces.com/api/problemset.problems');
     const problems = response.data.result.problems;
+    console.log(`📦 Fetched ${problems.length} problems from API.`);
 
-    // filter problems to update database.
-    const formattedProblems = problems
-      .filter(p => p.rating && p.tags.length > 0) // Must have rating & tags
-      .map(p => ({
-        contestId: p.contestId,
-        index: p.index,
-        name: p.name,
-        rating: p.rating,
-        tags: p.tags,
-        uniqueId: `${p.contestId}_${p.index}` // "1234_A"
-      }));
+    // 3. Filter Data (Rating 800-2000, Must have tags, contestId, and index)
+    const filteredProblems = problems.filter(p => 
+        p.rating >= 800 && p.rating <= 2000 && 
+        p.tags && p.tags.length > 0 &&
+        p.contestId && p.index
+    );
+    console.log(`🔍 Filtered down to ${filteredProblems.length} useable problems.`);
 
-    // Bulk Write 
-    const operations = formattedProblems.map(p => ({
-      updateOne: {                                    // updateone mongodb syntax
-        filter: { uniqueId: p.uniqueId },
-        update: { $set: p },
-        upsert: true            // update + insert this checks if present update else add.
-      }
+    // 4. Clean & Save
+    console.log("🗑️  Deleting old problems...");
+    await Problem.deleteMany({});
+
+    console.log("💾 Inserting new problems (this takes ~30 seconds)...");
+    
+    // Format for our Database
+    const problemDocs = filteredProblems.map(p => ({
+      contestId: p.contestId,
+      index: p.index,
+      name: p.name,
+      type: p.type,
+      rating: p.rating,
+      tags: p.tags,
+      uniqueId: `${p.contestId}_${p.index}` // Add uniqueId
     }));
 
-    if (operations.length > 0) {
-      await Problem.bulkWrite(operations);              // bulkwrite function given by mongoose for bulk writting expects an array
-      console.log(`Successfully seeded ${operations.length} problems!`);
-    }
+    await Problem.insertMany(problemDocs);
 
+    console.log('✅ SUCCESS: Database is now full!');
+    process.exit();
   } catch (error) {
-    console.error('Error seeding problems:', error.message);
+    console.error('❌ Error during seeding:', error.message);
+    process.exit(1);
   }
 };
-
-module.exports = seedProblems;
