@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
   "http://localhost:5173",
   "https://codeduel.vercel.app",
-   "https://codeduel-livid.vercel.app" // We will get this URL later, but add it now
+   "https://codeduel-9iclqf2ez-manojs-projects-96782205.vercel.app" // We will get this URL later, but add it now
 ];
 
 app.use(cors({
