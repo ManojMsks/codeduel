@@ -53,7 +53,7 @@ const Battle = () => {
       // 2. Use the variable instead of the hardcoded string
       const response = await axios.post(`${API_URL}/api/game/verify`, {
         gameId: gameData.gameId,
-        userId: user.id 
+        userId: user.id || user._id
       });
 
       if (response.data.success && response.data.gameStatus === 'FINISHED') {

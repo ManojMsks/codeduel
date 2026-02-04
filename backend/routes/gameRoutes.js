@@ -10,4 +10,7 @@ router.post('/create', gameController.createGame);
 // POST /api/game/join
 router.post('/join', gameController.joinGame);
 
+
+router.post('/verify', gameController.verifySubmission);
+
 module.exports = router;
