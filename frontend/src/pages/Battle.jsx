@@ -6,9 +6,7 @@ import { ExternalLink, RefreshCw, Trophy, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 import { socket } from '../socket';
 
-// We reuse the same socket connection
-const socket = io('http://localhost:3001');
-
+  
 const Battle = () => {
   const { roomId } = useParams();
   const location = useLocation();
@@ -46,11 +44,15 @@ const Battle = () => {
   const handleCheckSubmission = async () => {
     if (!user || !gameData) return;
     setVerifying(true);
+    
+    // 1. Get the dynamic URL (Render or Localhost)
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
     try {
-      const response = await axios.post('http://localhost:3001/api/game/verify', {
+      // 2. Use the variable instead of the hardcoded string
+      const response = await axios.post(`${API_URL}/api/game/verify`, {
         gameId: gameData.gameId,
-        userId: user.id // Ensure this matches your User model ID
+        userId: user.id 
       });
 
       if (response.data.success && response.data.gameStatus === 'FINISHED') {

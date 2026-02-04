@@ -6,8 +6,6 @@ import { Badge } from "@/components/ui/badge"; // You might need to add this: np
 import { Sword, Zap, History, User } from 'lucide-react';
 import { socket } from '../socket';
 
-// Connect to Backend Socket
-const socket = io('http://localhost:3001');
 
 const Lobby = () => {
   const navigate = useNavigate();
