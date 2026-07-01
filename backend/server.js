@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const cors = require('cors');       // used for cross origin reference. 
 const http = require('http'); 
 const { Server } = require('socket.io'); 
 const Game = require('./models/Game');
@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://codeduel-ochre.vercel.app" // We will get this URL later, but add it now
+  "https://codeduel-ochre.vercel.app" // we have to replace this with the web url
 ];
 
 app.use(cors({
@@ -46,44 +46,43 @@ const io = new Server(server, {
 });
 
 // NEW LINE: Make 'io' accessible to your controllers
-app.set('io', io);
+app.set('io', io);      //pattern for sharing objects.
 
 // Listen for connections
 // GLOBAL VARIABLE (In-memory Queue)
 let waitingPlayer = null; 
 
 io.on('connection', (socket) => {
-  console.log(`⚡ User Connected: ${socket.id}`);
+  console.log(`User Connected: ${socket.id}`);
 
   // 1. HANDLE 'JOIN_QUEUE'
   socket.on('join_queue', async (userData) => {
-    console.log("📩 Request received from:", userData.username); // LOG 1
+    console.log("Request received from:", userData.username); // LOG 1
 
     try {
       if (waitingPlayer) {
-        console.log("👀 Found waiting player:", waitingPlayer.username); // LOG 2
+        console.log("Found waiting player:", waitingPlayer.username); // LOG 2
         
         const opponent = waitingPlayer;
         
         if (opponent.userId === userData.userId) {
-            console.log("⚠️ PREVENTED SELF-MATCH!"); // LOG 3
+            console.log("PREVENTED SELF-MATCH!"); // LOG 3
             return; 
         }
 
-        console.log("✅ Creating Match..."); // LOG 4
+        console.log("Creating Match..."); // LOG 4
         // ... (rest of the match logic)
-        console.log(`⚔️ Match Found: ${opponent.username} vs ${userData.username}`);
+        console.log(`Match Found: ${opponent.username} vs ${userData.username}`);
 
         // A. Find a Random Problem (Rating 800-1200 for now)
         // Note: If you haven't run the seeder yet, this might fail. 
         // We will add a fallback just in case.
-        const problemCount = await Problem.countDocuments();
         let problem;
-        
-        if (problemCount > 0) {
-            const random = Math.floor(Math.random() * problemCount);
-            problem = await Problem.findOne().skip(random);
-        } else {
+        const randomProblems = await Problem.aggregate([{ $sample: { size: 1 } }]);
+        if (randomProblems.length > 0) {
+            problem = randomProblems[0];
+        }
+        else {
             // Fallback if DB is empty (Testing Mode)
             problem = { 
                 contestId: 4, index: 'A', name: 'Watermelon (Test)', 
@@ -116,7 +115,7 @@ io.on('connection', (socket) => {
             roomId, 
             opponent: userData.username, 
             gameId: newGame._id,
-            problem: newGame.problem // <--- ADD THIS LINE ✅
+            problem: newGame.problem 
         });
 
         // Emit to the Current Player (You)
@@ -124,7 +123,7 @@ io.on('connection', (socket) => {
             roomId, 
             opponent: opponent.username, 
             gameId: newGame._id,
-            problem: newGame.problem // <--- ADD THIS LINE HERE TOO ✅
+            problem: newGame.problem
         });
 
         // Clear the queue
@@ -137,7 +136,7 @@ io.on('connection', (socket) => {
           username: userData.username,
           rating: userData.codeDuelRating
         };
-        console.log(`⏳ User ${userData.username} joined the queue...`);
+        console.log(`User ${userData.username} joined the queue...`);
       }
 
     } catch (err) {
@@ -156,15 +155,13 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     // If the waiting player disconnects, remove them from queue
     if (waitingPlayer && waitingPlayer.socketId === socket.id) {
-        console.log("❌ Waiting player disconnected. Queue cleared.");
+        console.log("Waiting player disconnected. Queue cleared.");
         waitingPlayer = null;
     }
     console.log('User Disconnected');
   });
 });
-// ----------------------------------------------------
 
-// IMPORTANT: Change app.listen() to server.listen()
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
