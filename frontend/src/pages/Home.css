@@ -1,0 +1,57 @@
+.home {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.home-container {
+  width: 100%;
+  max-width: 460px;
+}
+
+.home-container h1 {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  margin-bottom: 10px;
+}
+
+.tagline {
+  color: #333;
+  margin-bottom: 44px;
+  font-size: 17px;
+}
+
+.login-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 52px;
+}
+
+.login-box label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  border-top: 2px solid #555;
+  padding-top: 32px;
+}
+
+.feature span {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.feature p {
+  font-size: 13px;
+  color: #333;
+  margin-top: 6px;
+}

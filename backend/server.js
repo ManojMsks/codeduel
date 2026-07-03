@@ -77,16 +77,25 @@ io.on('connection', (socket) => {
         // A. Find a Random Problem (Rating 800-1200 for now)
         // Note: If you haven't run the seeder yet, this might fail. 
         // We will add a fallback just in case.
+        // Pick problem based on average rating of both players
+        const avgRating = Math.round((opponent.rating + userData.codeDuelRating) / 2);
+        const minRating = avgRating - 100;
+        const maxRating = avgRating + 100;
+
         let problem;
-        const randomProblems = await Problem.aggregate([{ $sample: { size: 1 } }]);
+        const randomProblems = await Problem.aggregate([
+            { $match: { rating: { $gte: minRating, $lte: maxRating } } },
+            { $sample: { size: 1 } }
+        ]);
+
         if (randomProblems.length > 0) {
             problem = randomProblems[0];
-        }
-        else {
-            // Fallback if DB is empty (Testing Mode)
-            problem = { 
-                contestId: 4, index: 'A', name: 'Watermelon (Test)', 
-                rating: 800, tags: ['math'] 
+        } else {
+            // Fallback: if no problem in range, pick any random problem
+            const fallback = await Problem.aggregate([{ $sample: { size: 1 } }]);
+            problem = fallback.length > 0 ? fallback[0] : {
+                contestId: 4, index: 'A', name: 'Watermelon (Test)',
+                rating: 800, tags: ['math']
             };
         }
 

@@ -12,16 +12,6 @@ const userSchema = new mongoose.Schema({
   wins: { type: Number, default: 0 },
   losses: { type: Number, default: 0 },
 
-  // Contest Tracker
-  watchlist: [{
-    contestId: Number,
-    contestName: String,
-    startTime: Date
-  }],
-
-  // FUTURE EXPANSION: Role-Based Access
-  // "admin" can ban users or create official tournaments later.
-  role: { type: String, enum: ['user', 'admin'], default: 'user' },
 
 }, { timestamps: true });
 

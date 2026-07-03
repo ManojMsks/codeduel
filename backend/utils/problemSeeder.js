@@ -55,7 +55,6 @@ const seedProblems = async () => {
       contestId: p.contestId,
       index: p.index,
       name: p.name,
-      type: p.type,
       rating: p.rating,
       tags: p.tags,
       uniqueId: `${p.contestId}_${p.index}` // Add uniqueId

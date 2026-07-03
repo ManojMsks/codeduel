@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/lobby" element={<Lobby />} />
-        <Route path="/battle/:roomId" element={<Battle />} />  // roomId is a dynamic parameter that will be passed to the Battle component during runtime.
+        <Route path="/battle/:roomId" element={<Battle />} />
       </Routes>
     </BrowserRouter>
   );

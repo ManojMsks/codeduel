@@ -1,0 +1,130 @@
+.battle {
+  min-height: 100vh;
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.battle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #555;
+  padding-bottom: 24px;
+  margin-bottom: 40px;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.player.right {
+  align-items: flex-end;
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #333;
+  font-weight: 600;
+}
+
+.name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.vs {
+  text-align: center;
+}
+
+.vs h1 {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.vs p {
+  font-size: 13px;
+  color: #333;
+}
+
+.battle-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.problem-box, .control-box {
+  border: 2px solid #555;
+  padding: 36px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+}
+
+.problem-box h2, .control-box h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.problem-box h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.problem-rating {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 14px;
+}
+
+.problem-desc {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 28px;
+}
+
+.status {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 28px;
+}
+
+.hint {
+  font-size: 13px;
+  color: #333;
+  margin-top: 12px;
+}
+
+.result-box {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.result-box h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.winner-text {
+  font-size: 22px;
+  color: #111;
+  margin-bottom: 36px;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #333;
+  font-size: 18px;
+}

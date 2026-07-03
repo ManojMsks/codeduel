@@ -1,7 +1,6 @@
 const Game = require('../models/Game');
 const Problem = require('../models/Problem');
 const User = require('../models/User');
-const { v4: uuidv4 } = require('uuid'); // for generating random string for room id
 const axios = require('axios');
 
 exports.verifySubmission = async (req, res) => {
@@ -60,14 +59,31 @@ exports.verifySubmission = async (req, res) => {
       game.endTime = new Date();
       await game.save();
 
-      // Update User Stats (Simple +1 for now)
-      await User.findByIdAndUpdate(userId, { $inc: { wins: 1 } });
-      
-      // OPTIONAL: Update Loser Stats (If you want to track losses)
-      const loserId = game.player1.toString() === userId ? game.player2 : game.player1;
-      if (loserId) {
-        await User.findByIdAndUpdate(loserId, { $inc: { losses: 1 } });
-      }
+     // Get both players
+const winner = await User.findById(userId);
+const loserId = game.player1.toString() === userId ? game.player2 : game.player1;
+const loser = await User.findById(loserId);
+
+// ELO calculation
+const K = 32;
+
+const expectedWinner = 1 / (1 + Math.pow(10, (loser.codeDuelRating - winner.codeDuelRating) / 400));
+const expectedLoser = 1 - expectedWinner;
+
+const winnerNewRating = Math.round(winner.codeDuelRating + K * (1 - expectedWinner));
+const loserNewRating = Math.round(loser.codeDuelRating + K * (0 - expectedLoser));
+
+// Update both players
+await User.findByIdAndUpdate(userId, { 
+  $inc: { wins: 1 },
+  $set: { codeDuelRating: winnerNewRating }
+});
+
+await User.findByIdAndUpdate(loserId, { 
+  $inc: { losses: 1 },
+  $set: { codeDuelRating: Math.max(100, loserNewRating) } // floor at 100, never goes below
+});
+
 
       //update the loser
       const io = req.app.get('io');
@@ -76,7 +92,8 @@ exports.verifySubmission = async (req, res) => {
       // roomId is stored in the game document
       io.to(game.roomId).emit('game_over', {
         winner: userId,
-        message: 'Game Finished!'
+        winnerNewRating,
+        loserNewRating: Math.max(100, loserNewRating)
       });
 
       return res.json({ 
@@ -103,87 +120,3 @@ exports.verifySubmission = async (req, res) => {
 
 
 
-// Creates a new room
-exports.createGame = async (req, res) => {
-  try {
-    const { userId, minRating, maxRating } = req.body;
-
-    //Validate User creating room 
-    const player = await User.findById(userId);
-    if (!player) return res.status(404).json({ error: 'User not found' });
-
-    // Find a Random Problem matching criteria using mongo db syntax.
-    const randomProblem = await Problem.aggregate([
-      { 
-        $match: { 
-          rating: { $gte: minRating, $lte: maxRating } // e.g., 1000-1200
-        } 
-      },
-      { $sample: { size: 1 } } // Randomly pick 1
-    ]);
-
-    if (randomProblem.length === 0) {
-      return res.status(404).json({ error: 'No problems found in this rating range' });
-    }
-
-    const problem = randomProblem[0];
-
-    // Create the Game Room
-    const newGame = new Game({
-      roomId: uuidv4(), // Generates a unique string like "9b1deb4d..."
-      player1: userId,
-      player2: null, // Waiting for opponent
-      problem: {
-        contestId: problem.contestId,
-        index: problem.index,
-        name: problem.name,
-        rating: problem.rating,
-        url: `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`
-      },
-      status: 'WAITING'
-    });
-
-    await newGame.save();
-
-    // Return the Room ID to the frontend
-    res.status(201).json({ 
-      success: true, 
-      roomId: newGame.roomId,
-      gameId: newGame._id 
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error creating game' });
-  }
-};
-
-// join an existing battle
-exports.joinGame = async (req, res) => {
-  try {
-    const { gameId, userId } = req.body;
-
-    const game = await Game.findById(gameId);
-    if (!game) return res.status(404).json({ error: 'Game not found' });
-
-    if (game.player2) {
-      return res.status(400).json({ error: 'Game is full' });
-    }
-
-    // Prevent user from playing against themselves
-    if (game.player1.toString() === userId) {
-      return res.status(400).json({ error: 'You are already in this game' });
-    }
-
-    // Update Game State
-    game.player2 = userId;
-    game.status = 'IN_PROGRESS';
-    game.startTime = new Date();
-    await game.save();
-
-    res.json({ success: true, message: 'Game joined!', game });
-
-  } catch (error) {
-    res.status(500).json({ error: 'Server error joining game' });
-  }
-};

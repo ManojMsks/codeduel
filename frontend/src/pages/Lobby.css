@@ -1,0 +1,107 @@
+.lobby {
+  min-height: 100vh;
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.lobby-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48px;
+  border-bottom: 2px solid #555;
+  padding-bottom: 20px;
+}
+
+.lobby-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.rating {
+  font-size: 15px;
+  color: #333;
+}
+
+.lobby-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 28px;
+}
+
+.matchmaking-box {
+  border: 2px solid #555;
+  padding: 40px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+}
+
+.matchmaking-box h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.matchmaking-box p {
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 28px;
+}
+
+.searching {
+  color: #111 !important;
+  font-weight: 500;
+  margin-bottom: 16px !important;
+}
+
+.stats-box {
+  border: 2px solid #555;
+  padding: 40px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+}
+
+.stats-box h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #777;
+  font-size: 17px;
+}
+
+.stat span {
+  color: #333;
+}
+
+.stat strong {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #333;
+  font-size: 18px;
+}
