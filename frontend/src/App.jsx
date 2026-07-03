@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Lobby from './pages/Lobby';
-import Battle from './pages/Battle'; // <--- IMPORT THIS
+import Battle from './pages/Battle';
 
 function App() {
   return (
@@ -9,8 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/lobby" element={<Lobby />} />
-        {/* NEW ROUTE BELOW: The ":roomId" part is a variable */}
-        <Route path="/battle/:roomId" element={<Battle />} />
+        <Route path="/battle/:roomId" element={<Battle />} />  // roomId is a dynamic parameter that will be passed to the Battle component during runtime.
       </Routes>
     </BrowserRouter>
   );

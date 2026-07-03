@@ -14,7 +14,7 @@ const Battle = () => {
   const navigate = useNavigate();
   
   // Game State
-  const [gameData, setGameData] = useState(location.state || null); // Data passed from Lobby
+  const [gameData,setGameData] = useState(location.state || null); // Data passed from Lobby
   const [user, setUser] = useState(null);
   const [verifying, setVerifying] = useState(false);
   const [winner, setWinner] = useState(null);
