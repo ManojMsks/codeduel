@@ -12,7 +12,9 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://codeduel-ochre.vercel.app" // we have to replace this with the web url
+  "https://codeduel-ochre.vercel.app",
+  "https://codeduel-bl9o-5r8zwhb8v-manojs-projects-96782205.vercel.app",
+  "https://codeduel-bl9o.vercel.app"
 ];
 
 app.use(cors({
