@@ -18,6 +18,9 @@ function makeClient(id) {
 
   let sentAt;
 
+  // Helper to generate a fake 24-character hex string for MongoDB ObjectId
+  const fakeObjectId = [...Array(24)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+
   socket.on("connect", () => {
     connected++;
 
@@ -27,7 +30,7 @@ function makeClient(id) {
     // Emit the join_queue event with the payload your backend expects
     socket.emit(JOIN_EVENT, {
       username: `loadtest-user-${id}`,
-      userId: `fake-id-${id}`,
+      userId: fakeObjectId,
       codeDuelRating: 1000
     });
 
