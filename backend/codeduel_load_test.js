@@ -15,18 +15,18 @@ let resultsReceived = 0;
 
 function makeClient(id) {
   const socket = io(SERVER_URL, { transports: ["websocket"], timeout: 5000 });
-  
+
   let sentAt;
 
   socket.on("connect", () => {
     connected++;
-    
+
     // Track when we sent the join request
     sentAt = Date.now();
-    
+
     // Emit the join_queue event with the payload your backend expects
-    socket.emit(JOIN_EVENT, { 
-      username: `loadtest-user-${id}`, 
+    socket.emit(JOIN_EVENT, {
+      username: `loadtest-user-${id}`,
       userId: `fake-id-${id}`,
       codeDuelRating: 1000
     });
