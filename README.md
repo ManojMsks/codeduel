@@ -79,6 +79,12 @@ flowchart TD
   end
 ```
 
+### Rendered architecture diagram
+
+![Architecture diagram](assets/architecture.svg)
+
+*(If your platform doesn't render the SVG, open this link: https://raw.githubusercontent.com/ManojMsks/codeduel/main/assets/architecture.svg)*
+
 ASCII fallback (if Mermaid isn't available):
 
 - User browser (React SPA)
